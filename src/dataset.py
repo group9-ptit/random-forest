@@ -1,17 +1,19 @@
-from typing import List, Any, Dict, Self, Set
+from typing import List, Any, Set
 from collections import Counter
 from src.helper import entropy
+from src.type import DatasetRow
 import logging
 
 
 class Dataset:
-    def __init__(self, records: List[Dict[str, Any]], labels: List[str]) -> None:
+    def __init__(self, records: List[DatasetRow], labels: List[str]) -> None:
         self.records = records
-        self.labels = labels
         self.attributes = set(records[0].keys())
+        self.labels = labels
+        self.label_values = set(labels)
         self.shape = (len(records), len(self.attributes))
 
-    def sub_dataset(self, attribute: str, value: Any) -> Self:
+    def sub_dataset(self, attribute: str, value: Any) -> 'Dataset':
         """Tạo tập dữ liệu mới đối với thuộc tính `attribute` có giá trị `value`"""
         n_row = self.shape[0]
 
@@ -64,5 +66,4 @@ class Dataset:
         return max_attribute
 
     def is_single_label(self):
-        unq_labels = set(self.labels)
-        return len(unq_labels) == 0
+        return len(self.label_values) == 1
