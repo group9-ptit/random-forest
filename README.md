@@ -13,3 +13,9 @@ python -m venv .venv
 & .venv/Scripts/Activate.ps1
 pip install -r requirements.txt
 ```
+
+## **How to run**
+Run this command and see result in `tree.json`
+```
+python main.py
+```
