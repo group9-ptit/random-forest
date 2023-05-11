@@ -1,8 +1,8 @@
+import json
 from abc import ABC, abstractmethod
-from copy import deepcopy
+from typing import List, Optional
 from src.dataset import Dataset
-from src.type import DatasetRow
-from typing import List, Dict, Optional
+from src.type import Record
 
 
 class Model(ABC):
@@ -10,20 +10,33 @@ class Model(ABC):
         super().__init__()
 
     @abstractmethod
-    def fit(self, X: List[DatasetRow], Y: List[str]) -> None:
+    def fit(self, X: List[Record], Y: List[str]) -> None:
         """Huấn luyện mô hình với tập dữ liệu X và nhãn tương ứng Y"""
         pass
 
-    @abstractmethod
-    def predict(self, X: List[DatasetRow]) -> List[str]:
+    def predict(self, X: List[Record]) -> List[str]:
         """Dự đoán nhãn của tập dữ liệu X"""
+        return [self.predict_one(x) for x in X]
+
+    @abstractmethod
+    def predict_one(self, x: Record) -> str:
+        """Dự đoán nhãn của bản ghi x"""
         pass
 
 
 class TreeNode:
-    def __init__(self, attribute: str, children: Dict[str, 'TreeNode'], label: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        attribute: Optional[str] = None,
+        threshold: Optional[float] = None,
+        left: Optional['TreeNode'] = None,
+        right: Optional['TreeNode'] = None,
+        label: Optional[str] = None
+    ) -> None:
         self.attribute = attribute
-        self.children = children
+        self.threshold = threshold
+        self.left = left
+        self.right = right
         self.label = label
 
     def is_leaf(self) -> bool:
@@ -33,44 +46,44 @@ class TreeNode:
 class DecisionTree(Model):
     """Cây quyết định sử dụng thuật toán ID3 cho bài toán phân lớp"""
 
-    def __init__(self) -> None:
+    def __init__(self, max_depth: Optional[int] = None) -> None:
         super().__init__()
         self.root = None
+        self.max_depth = max_depth
 
-    def fit(self, X: List[DatasetRow], Y: List[str]) -> None:
+    def fit(self, X: List[Record], Y: List[str]) -> None:
         dataset = Dataset(X, Y)
         self.root = self.__build_tree(dataset)
 
     def __build_tree(self, dataset: Dataset, depth=0) -> TreeNode:
-        split_attribute = dataset.best_splitter()
-        attribute_values = dataset.values(split_attribute)
+        is_finish = (self.max_depth == depth) or dataset.same_class()
 
-        children = {}
-        for attribute_value in attribute_values:
-            new_dataset = dataset.sub_dataset(split_attribute, attribute_value)
-            child_node = None
+        if is_finish:
+            return TreeNode(label=dataset.most_common_label())
 
-            if new_dataset.is_single_label():
-                clone_label_values = deepcopy(new_dataset.label_values)
-                label = clone_label_values.pop()
-                child_node = TreeNode(split_attribute, {}, label)
-            else:
-                child_node = self.__build_tree(new_dataset, depth + 1)
+        attribute, threshold, lte_dataset, gt_dataset = dataset.best_splitter()
 
-            children[attribute_value] = child_node
+        left = self.__build_tree(lte_dataset, depth + 1)
+        right = self.__build_tree(gt_dataset, depth + 1)
 
-        return TreeNode(split_attribute, children)
+        return TreeNode(attribute, threshold, left, right)
 
-    def predict(self, X: List[DatasetRow]) -> List[str]:
-        return [self.predict_one(x) for x in X]
-
-    def predict_one(self, x: DatasetRow) -> str:
+    def predict_one(self, x: Record) -> str:
         node = self.root
         while not node.is_leaf():
             attribute = node.attribute
+            threshold = node.threshold
             attribute_value = x[attribute]
-            node = node.children[attribute_value]
+            node = node.left if attribute_value <= threshold else node.right
         return node.label
+
+    def to_json(self):
+        return json.dumps(
+            self.root,
+            default=lambda o: o.__dict__,
+            sort_keys=True,
+            indent=2
+        )
 
 
 class RandomForest(Model):
@@ -78,8 +91,8 @@ class RandomForest(Model):
         super().__init__()
         self.n_estimator = n_estimator
 
-    def fit(self, X: List[DatasetRow], Y: List[str]) -> None:
+    def fit(self, X: List[Record], Y: List[str]) -> None:
         return super().fit(X, Y)
 
-    def predict(self, X: List[DatasetRow]) -> List[str]:
-        return super().predict(X)
+    def predict_one(self, x: Record) -> str:
+        return super().predict_one(x)

@@ -1,69 +1,94 @@
-from typing import List, Any, Set
+import copy
+import csv
+import math
+import logging
+import statistics
+from typing import List, Tuple
 from collections import Counter
 from src.helper import entropy
-from src.type import DatasetRow
-import logging
+from src.type import Record
 
 
 class Dataset:
-    def __init__(self, records: List[DatasetRow], labels: List[str]) -> None:
+    def __init__(self, records: List[Record], labels: List[str]) -> None:
         self.records = records
         self.attributes = set(records[0].keys())
         self.labels = labels
-        self.label_values = set(labels)
         self.shape = (len(records), len(self.attributes))
 
-    def sub_dataset(self, attribute: str, value: Any) -> 'Dataset':
-        """Tạo tập dữ liệu mới đối với thuộc tính `attribute` có giá trị `value`"""
-        n_row = self.shape[0]
+    def best_splitter(self) -> Tuple[str, float, 'Dataset', 'Dataset']:
+        """Tìm thuộc tính có khả năng phân loại tốt nhất và ngưỡng giá trị của nó"""
+        ES = self.__entropy()
+        _attribute, _threshold, _lte, _gt = None, 0, None, None
+        max_gain = -math.inf
 
-        _records = []
-        _labels = []
+        for attribute in self.attributes:
+            split_point, loss, lte_dataset, gt_dataset = self.__best_split_point(
+                attribute)
+            information_gain = ES - loss
+            if information_gain > max_gain:
+                _threshold = split_point
+                _attribute = attribute
+                _lte = lte_dataset
+                _gt = gt_dataset
 
-        for i in range(n_row):
-            if self.records[i][attribute] == value:
-                clone_record = self.records[i].copy()
-                clone_record.pop(attribute)
-                _records.append(clone_record)
-                _labels.append(self.labels[i])
+        logging.debug(f'Best splitter: IG[{_attribute}] = {max_gain}')
 
-        return Dataset(_records, _labels)
+        return _attribute, _threshold, _lte, _gt
 
-    def values(self, attribute: str) -> Set[str]:
-        """Tìm tập giá trị của thuộc tính `attribute`"""
-        values = set()
-        for record in self.records:
-            values.add(record[attribute])
-        return values
-
-    def entropy(self):
+    def __entropy(self):
         freq = Counter(self.labels)
         n_row = self.shape[0]
         probabilities = [value / n_row for value in freq.values()]
         return entropy(probabilities)
 
-    def best_splitter(self) -> str:
-        """Tìm thuộc tính có khả năng phân loại tốt nhất"""
-        ES = self.entropy()
-        max_ig, max_attribute = 0, None
+    def __best_split_point(self, attribute: str) -> Tuple[float, float, 'Dataset', 'Dataset']:
+        """Tìm ngưỡng phân chia tốt nhất với thuộc tính `attribute`"""
+        split_point, min_loss, lte, gt = None, math.inf, None, None
+        values = [record[attribute] for record in self.records]
+        sorted_values = values.sort()
 
-        for attribute in self.attributes:
-            information_gain = ES
+        for i in range(1, len(sorted_values) - 1):
+            left = sorted_values[i]
+            right = sorted_values[i + 1]
 
-            for value in self.values(attribute):
-                sub_dataset = self.sub_dataset(attribute, value)
-                information_gain -= (sub_dataset.shape[0] /
-                                     self.shape[0]) * sub_dataset.entropy()
+            if left == right:
+                continue
 
-            logging.debug(f'IG[{attribute}] = {information_gain}')
+            threshold = (left + right) / 2
+            lte_dataset, gt_dataset = self.__split(attribute, threshold)
+            loss = lte_dataset.__entropy() + gt_dataset.__entropy()
 
-            if information_gain > max_ig:
-                max_ig = information_gain
-                max_attribute = attribute
+            if loss < min_loss:
+                min_loss = loss
+                split_point = threshold
+                lte = lte_dataset
+                gt = gt_dataset
 
-        logging.debug(f'Best splitter: IG[{max_attribute}] = {max_ig}')
+        return split_point, min_loss, lte, gt
 
-        return max_attribute
+    def __split(self, attribute: str, threshold: float):
+        """Chia dữ liệu thành hai tập dựa trên thuộc tính `attribute` và ngưỡng `threshold`"""
+        n_row = self.shape[0]
 
-    def is_single_label(self):
-        return len(self.label_values) == 1
+        lte_records = []
+        lte_labels = []
+
+        gt_records = []
+        gt_label = []
+
+        for i in range(n_row):
+            if self.records[i][attribute] <= threshold:
+                lte_records.append(self.records[i])
+                lte_labels.append(self.labels[i])
+            else:
+                gt_records.append(self.records[i])
+                gt_label.append(self.labels[i])
+
+        return Dataset(lte_records, lte_labels), Dataset(gt_records, gt_label)
+
+    def same_class(self):
+        return set(self.labels).__sizeof__() == 1
+
+    def most_common_label(self):
+        return statistics.mode(self.labels)
