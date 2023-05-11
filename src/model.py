@@ -56,9 +56,7 @@ class DecisionTree(Model):
         self.root = self.__build_tree(dataset)
 
     def __build_tree(self, dataset: Dataset, depth=0) -> TreeNode:
-        is_finish = (self.max_depth == depth) or dataset.same_class()
-
-        if is_finish:
+        if self.__can_stop(dataset, depth):
             return TreeNode(label=dataset.most_common_label())
 
         attribute, threshold, lte_dataset, gt_dataset = dataset.best_splitter()
@@ -67,6 +65,11 @@ class DecisionTree(Model):
         right = self.__build_tree(gt_dataset, depth + 1)
 
         return TreeNode(attribute, threshold, left, right)
+
+    def __can_stop(self, dataset: Dataset, current_depth: int) -> bool:
+        if (self.max_depth is not None) and (self.max_depth == current_depth):
+            return True
+        return dataset.same_class()
 
     def predict_one(self, x: Record) -> str:
         node = self.root
