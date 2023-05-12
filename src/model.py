@@ -47,7 +47,8 @@ class TreeNode:
     def to_dict(self) -> Dict[str, Any]:
         o = {
             'entropy': self.dataset.entropy,
-            'value': self.dataset.label_counter
+            'value': self.dataset.label_counter,
+            'samples': self.dataset.samples
         }
         if self.is_leaf():
             o['label'] = self.label
