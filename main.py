@@ -63,7 +63,7 @@ def build_with_sklearn_tree(splitted_data, max_depth=None, min_samples_split=2):
 
 sizes = [0.2]
 max_depths = [None]
-min_samples_splits = [2]
+min_samples_splits = [8]
 for size in sizes:
     for max_depth in max_depths:
         for min_samples_split in min_samples_splits:

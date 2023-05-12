@@ -55,6 +55,7 @@ class TreeNode:
         if self.is_leaf():
             o['label'] = self.label
         else:
+            o['threshold'] = self.threshold
             o['attribute'] = self.attribute
             o['left'] = self.left.to_dict()
             o['right'] = self.right.to_dict()
