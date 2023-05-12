@@ -17,17 +17,17 @@ def entropy(probabilities: List[float]) -> float:
     return h
 
 
-def read_csv(filepath: str) -> List[CsvRow]:
+def read_csv(filepath: str, delimiter=",") -> List[CsvRow]:
     with open(filepath, encoding='utf-8') as file:
-        reader = csv.DictReader(file)
+        reader = csv.DictReader(file, delimiter=delimiter)
         return [row for row in reader]
 
 
-def separate_dataset(data: List[CsvRow], label_field: str) -> Tuple[List[CsvRowWithoutLabel], List[str]]:
+def separate_dataset(data: List[CsvRow], label: str) -> Tuple[List[CsvRowWithoutLabel], List[str]]:
     """Phân chia dữ liệu thành hai phần thuộc tính và nhãn"""
     X, Y = [], []
     for row in deepcopy(data):
-        _label = row.pop(label_field)
+        _label = row.pop(label)
         X.append(row)
         Y.append(_label)
     return X, Y
@@ -45,8 +45,9 @@ def encode_attributes(data: List[CsvRowWithoutLabel]) -> List[Record]:
 
     for attribute, values in attribute_values.items():
         encoder = LabelEncoder()
-        encoded_values = list(encoder.fit_transform(values))
-        attribute_values.update([(attribute, encoded_values)])
+        if type(values[0]) == str:
+            encoded_values = list(encoder.fit_transform(values))
+            attribute_values.update([(attribute, encoded_values)])
 
     encoded_rows = []
     for i in range(data.__len__()):
