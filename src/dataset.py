@@ -4,11 +4,11 @@ import statistics
 from typing import List, Tuple
 from collections import Counter
 from src.helper import entropy
-from src.type import Record
+from src.type import Record, Label
 
 
 class Dataset:
-    def __init__(self, records: List[Record], labels: List[str]) -> None:
+    def __init__(self, records: List[Record], labels: List[Label]) -> None:
         self.records = records
         self.attributes = set(records[0].keys())
         self.labels = labels

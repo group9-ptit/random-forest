@@ -1,8 +1,10 @@
 import json
+import statistics
 from abc import ABC, abstractmethod
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, List, Optional, Dict
 from src.dataset import Dataset
-from src.type import Record
+from src.type import Record, Label
 
 
 class Model(ABC):
@@ -10,16 +12,16 @@ class Model(ABC):
         super().__init__()
 
     @abstractmethod
-    def fit(self, X: List[Record], Y: List[str]) -> None:
+    def fit(self, X: List[Record], Y: List[Label]) -> None:
         """Huấn luyện mô hình với tập dữ liệu X và nhãn tương ứng Y"""
         pass
 
-    def predict(self, X: List[Record]) -> List[str]:
+    def predict(self, X: List[Record]) -> List[Label]:
         """Dự đoán nhãn của tập dữ liệu X"""
         return [self.predict_one(x) for x in X]
 
     @abstractmethod
-    def predict_one(self, x: Record) -> str:
+    def predict_one(self, x: Record) -> Label:
         """Dự đoán nhãn của bản ghi x"""
         pass
 
@@ -32,7 +34,7 @@ class TreeNode:
         threshold: Optional[float] = None,
         left: Optional['TreeNode'] = None,
         right: Optional['TreeNode'] = None,
-        label: Optional[str] = None
+        label: Optional[Label] = None
     ) -> None:
         self.dataset = dataset
         self.attribute = attribute
@@ -59,15 +61,17 @@ class TreeNode:
 
         return o
 
+
 class DecisionTree(Model):
     """Cây quyết định sử dụng thuật toán ID3 cho bài toán phân lớp"""
 
-    def __init__(self, max_depth: Optional[int] = None) -> None:
+    def __init__(self, max_depth: Optional[int] = None, min_samples_split: int = 2) -> None:
         super().__init__()
         self.root = None
         self.max_depth = max_depth
+        self.min_samples_split = min_samples_split
 
-    def fit(self, X: List[Record], Y: List[str]) -> None:
+    def fit(self, X: List[Record], Y: List[Label]) -> None:
         dataset = Dataset(X, Y)
         self.root = self.__build_tree(dataset)
 
@@ -90,9 +94,11 @@ class DecisionTree(Model):
     def __can_stop(self, dataset: Dataset, current_depth: int) -> bool:
         if (self.max_depth is not None) and (self.max_depth == current_depth):
             return True
+        if dataset.samples < self.min_samples_split:
+            return True
         return dataset.same_class()
 
-    def predict_one(self, x: Record) -> str:
+    def predict_one(self, x: Record) -> Label:
         node = self.root
         while not node.is_leaf():
             attribute = node.attribute
@@ -113,12 +119,30 @@ class DecisionTree(Model):
 
 
 class RandomForest(Model):
-    def __init__(self, n_estimator=30) -> None:
+    def __init__(self, n_estimator=100, max_depth: Optional[int] = None, min_samples_split: int = 2, n_jobs=2) -> None:
         super().__init__()
         self.n_estimator = n_estimator
+        self.max_depth = max_depth
+        self.min_samples_split = min_samples_split
+        self.n_jobs = n_jobs
+        self.trees = []
 
-    def fit(self, X: List[Record], Y: List[str]) -> None:
-        return super().fit(X, Y)
+    def fit(self, X: List[Record], Y: List[Label]) -> None:
+        # pool = ThreadPoolExecutor(max_workers=self.n_jobs)
+        # i = 0
+        # while i < self.n_estimator:
+        #     pool.submit()
+        #     tree = self.__build_tree()
+        #     self.trees.append(tree)
+        #     i += 1
+        pass
 
-    def predict_one(self, x: Record) -> str:
-        return super().predict_one(x)
+    def __build_tree(X: List[Record], Y: List[Label]) -> DecisionTree:
+        pass
+
+    def predict_one(self, x: Record) -> Label:
+        labels = []
+        for tree in self.trees:
+            label = tree.predict_one(x)
+            labels.append(label)
+        return statistics.mode(labels)
