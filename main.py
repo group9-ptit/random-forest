@@ -1,6 +1,5 @@
 import logging
-from src import helper_pandas
-from src.model import DecisionTree
+from src import helper_pandas, virtualization, model
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, f1_score, r2_score
 
@@ -9,7 +8,7 @@ from sklearn.metrics import accuracy_score, f1_score, r2_score
 # Đọc file csv
 df = helper_pandas.read_csv("datasets/diabetes.csv")
 df = helper_pandas.encode_attributes(df)
-X, y = helper_pandas.separate_dataset(df, label='diabetes')
+X, y = helper_pandas.separate_dataset(df, label="diabetes")
 
 
 def compare(train_size: float, max_depth=None, min_samples_split=2):
@@ -20,7 +19,8 @@ def compare(train_size: float, max_depth=None, min_samples_split=2):
     sklearn_tree, sklearn_predict = build_with_sklearn_tree(splitted_data, max_depth, min_samples_split)
 
     # Draw tree
-
+    virtualization.virtualize_my_tree(my_tree, "out/my_tree.json")
+    virtualization.virtualize_sklearn_tree(sklearn_tree, "out/sklearn_tree.jpeg")
     same, diff = 0, 0
     for i in range(my_predict.__len__()):
         if my_predict[i] != sklearn_predict[i]:
@@ -28,13 +28,13 @@ def compare(train_size: float, max_depth=None, min_samples_split=2):
         else:
             same += 1
 
-    print('Same', same)
-    print('Diff', diff)
+    print("Same", same)
+    print("Diff", diff)
 
 
 def build_with_my_tree(splitted_data, max_depth=None, min_samples_split=2):
-    X_train, X_test, y_train, y_test = splitted_data['my_input']
-    tree = DecisionTree(
+    X_train, X_test, y_train, y_test = splitted_data["my_input"]
+    tree = model.DecisionTree(
         max_depth=max_depth,
         min_samples_split=min_samples_split
     )
@@ -47,9 +47,9 @@ def build_with_my_tree(splitted_data, max_depth=None, min_samples_split=2):
 
 
 def build_with_sklearn_tree(splitted_data, max_depth=None, min_samples_split=2):
-    X_train, X_test, y_train, y_test = splitted_data['sklearn_input']
+    X_train, X_test, y_train, y_test = splitted_data["sklearn_input"]
     tree = DecisionTreeClassifier(
-        criterion='entropy',
+        criterion="entropy",
         max_depth=max_depth,
         min_samples_split=min_samples_split
     )
