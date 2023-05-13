@@ -1,10 +1,9 @@
 import math
 import logging
 import statistics
-from typing import List, Tuple
 from collections import Counter
 from src.helper import entropy
-from src.type import Record, Label
+from src.type import Record, Label, List, Tuple
 
 
 class Dataset:

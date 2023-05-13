@@ -1,8 +1,7 @@
 import csv
 import math
 from copy import deepcopy
-from typing import List, Tuple
-from src.type import CsvRow, CsvRowWithoutLabel, Record
+from src.type import CsvRow, CsvRowWithoutLabel, Record, List, Tuple
 from sklearn.preprocessing import LabelEncoder
 
 

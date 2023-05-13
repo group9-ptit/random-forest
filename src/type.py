@@ -1,4 +1,4 @@
-from typing import Any, Dict, TypeVar, Union
+from typing import Any, Dict, TypeVar, Union, List, Set, Optional, Tuple
 
 Record = TypeVar('Record', bound=Dict[str, float])
 Label = TypeVar('Label', bound=Union[str, int])
