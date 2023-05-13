@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 def virtualize_my_tree(tree: DecisionTree, out: str):
     printer = PrettyPrintTree(
         lambda node: node.children,
-        lambda node: node.value,
+        lambda node: node.to_json(tree.criterion),
         return_instead_of_print=True,
         color=None,
         border=True,

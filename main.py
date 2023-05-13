@@ -8,7 +8,7 @@ df = helper.encode_attributes(df)
 X, Y = helper.separate_dataset(df, label="diabetes")
 
 estimators = [50]
-train_sizes = [0.8, 0.6]
+train_sizes = [0.8]
 max_depths = [8]
 min_samples_splits = [20]
 
@@ -20,11 +20,12 @@ for train_size in train_sizes:
                 Y=Y,
                 train_size=train_size,
                 max_depth=max_depth,
-                min_samples_split=min_samples_split
+                min_samples_split=min_samples_split,
+                criterion='entropy'
             )
             ts.run()
             ts.print_result()
-            # ts.export_tree()
+            ts.export_tree()
 
 # for n_estimators in estimators:
 #     for train_size in train_sizes:

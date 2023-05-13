@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from pandas import DataFrame, Series
 from prettytable import PrettyTable
 from core.model import DecisionTree, RandomForest
-from core.type import Optional, Union, Dict
+from core.type import Optional, Union, Dict, Measure
 from core.helper import train_test_split, now, random_id
 from core.virtualization import virtualize_my_tree, virtualize_sklearn_tree
 from sklearn.ensemble import RandomForestClassifier
@@ -18,6 +18,7 @@ class TestCase(ABC):
         train_size=0.8,
         min_samples_split=2,
         max_depth: Optional[int] = None,
+        criterion: Measure = 'entropy'
     ) -> None:
         _input = train_test_split(X, Y, train_size)
         self.my_input = _input['my_input']
@@ -26,6 +27,7 @@ class TestCase(ABC):
         self.meta_params = {
             'max_depth': max_depth,
             'min_samples_split': min_samples_split,
+            'criterion': criterion
         }
         self.id = random_id()
         self.my_result = {}
@@ -87,7 +89,7 @@ class DecisionTreeTestCase(TestCase):
 
     def run_sklearn_model(self):
         X_train, X_test, y_train, y_test = self.sklearn_input
-        tree = DecisionTreeClassifier(criterion='entropy', **self.meta_params)
+        tree = DecisionTreeClassifier(**self.meta_params)
         start_train = now()
         tree.fit(X_train, y_train)
         end_train = now()
@@ -110,6 +112,7 @@ class RandomForestTestCase(TestCase):
         self,
         X: DataFrame,
         Y: Series,
+        criterion: Measure = 'entropy',
         n_estimators=30,
         train_size=0.8,
         min_samples_split=2,
@@ -117,7 +120,7 @@ class RandomForestTestCase(TestCase):
         max_samples: Optional[Union[int, float]] = None,
         max_depth: Optional[int] = None
     ) -> None:
-        super().__init__(X, Y, train_size, min_samples_split, max_depth)
+        super().__init__(X, Y, train_size, min_samples_split, max_depth, criterion)
         self.meta_params = {
             'n_estimators': n_estimators,
             'max_depth': max_depth,
@@ -142,7 +145,6 @@ class RandomForestTestCase(TestCase):
     def run_sklearn_model(self):
         X_train, X_test, y_train, y_test = self.sklearn_input
         forest = RandomForestClassifier(
-            criterion='entropy',
             max_features=None,
             **self.meta_params
         )

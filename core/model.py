@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from core.datastructure import TreeNode, Dataset
-from core.type import Record, Label, List, Optional, Union, Tuple
+from core.type import Record, Label, List, Optional, Union, Tuple, Measure
 
 
 class Model(ABC):
@@ -32,12 +32,14 @@ class DecisionTree(Model):
     def __init__(
         self,
         max_depth: Optional[int] = None,
-        min_samples_split: int = 2
+        min_samples_split: int = 2,
+        criterion: Measure = 'entropy'
     ) -> None:
         super().__init__()
         self.root = None
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
+        self.criterion = criterion
 
     def fit(self, X: List[Record], Y: List[Label]) -> None:
         dataset = Dataset(X, Y)
@@ -47,7 +49,8 @@ class DecisionTree(Model):
         if self.__can_stop(dataset, depth):
             return TreeNode(dataset, label=dataset.most_common_label())
 
-        attribute, threshold, lte_dataset, gt_dataset = dataset.best_splitter()
+        attribute, threshold, lte_dataset, gt_dataset = dataset.best_splitter(
+            self.criterion)
 
         left = self.__build_tree(lte_dataset, depth + 1)
         right = self.__build_tree(gt_dataset, depth + 1)
@@ -76,6 +79,7 @@ class RandomForest(Model):
 
     def __init__(
         self,
+        criterion: Measure = 'entropy',
         n_estimators=100,
         min_samples_split=2,
         n_jobs=2,
@@ -83,6 +87,7 @@ class RandomForest(Model):
         max_samples: Optional[Union[int, float]] = None,
     ) -> None:
         super().__init__()
+        self.criterion = criterion
         self.n_estimators = n_estimators
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
@@ -102,7 +107,8 @@ class RandomForest(Model):
         X_samples, Y_samples = self.__bootstrap_sampling(X, Y)
         tree = DecisionTree(
             max_depth=self.max_depth,
-            min_samples_split=self.min_samples_split
+            min_samples_split=self.min_samples_split,
+            criterion=self.criterion
         )
         tree.fit(X_samples, Y_samples)
         return tree

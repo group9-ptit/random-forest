@@ -25,6 +25,12 @@ def entropy(probabilities: List[float]) -> float:
     return h
 
 
+def gini(probabilities: List[float]) -> float:
+    g = 1
+    for p in probabilities:
+        g -= p ** 2
+    return g
+
 def read_csv(filepath: str):
     return pd.read_csv(filepath)
 
