@@ -1,7 +1,7 @@
 import math
 import time
 import uuid
-from src.type import List
+from core.type import List
 import pandas as pd
 from sklearn import preprocessing, model_selection
 

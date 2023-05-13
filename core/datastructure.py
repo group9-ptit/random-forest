@@ -2,8 +2,8 @@ import json
 import math
 import logging
 from collections import Counter
-from src.helper import entropy
-from src.type import Optional, Label, Dict, Any, List, Record, Tuple
+from core.helper import entropy
+from core.type import Optional, Label, Dict, Any, List, Record, Tuple
 
 
 class Dataset:

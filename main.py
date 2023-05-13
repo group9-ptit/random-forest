@@ -1,4 +1,4 @@
-from src import helper, testcase
+from core import helper, testcase
 
 N_JOBS = 4
 MAX_SAMPLES = 0.8

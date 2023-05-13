@@ -1,6 +1,6 @@
 from math import ceil
 from PrettyPrint import PrettyPrintTree
-from src.model import DecisionTree
+from core.model import DecisionTree
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from matplotlib import pyplot as plt
 

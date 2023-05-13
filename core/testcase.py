@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from pandas import DataFrame, Series
 from prettytable import PrettyTable
-from src.model import DecisionTree, RandomForest
-from src.type import Optional, Union, Dict
-from src.helper import train_test_split, now, random_id
-from src.virtualization import virtualize_my_tree, virtualize_sklearn_tree
+from core.model import DecisionTree, RandomForest
+from core.type import Optional, Union, Dict
+from core.helper import train_test_split, now, random_id
+from core.virtualization import virtualize_my_tree, virtualize_sklearn_tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score

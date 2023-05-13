@@ -3,8 +3,8 @@ import random
 from abc import ABC, abstractmethod
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
-from src.datastructure import TreeNode, Dataset
-from src.type import Record, Label, List, Optional, Union, Tuple
+from core.datastructure import TreeNode, Dataset
+from core.type import Record, Label, List, Optional, Union, Tuple
 
 
 class Model(ABC):
