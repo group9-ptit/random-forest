@@ -1,6 +1,5 @@
-import logging
+import math
 import random
-import time
 from abc import ABC, abstractmethod
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
@@ -39,28 +38,18 @@ class DecisionTree(Model):
         self.root = None
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
-        self.depth = 0
 
     def fit(self, X: List[Record], Y: List[Label]) -> None:
-        start_time = time.time()
         dataset = Dataset(X, Y)
         self.root = self.__build_tree(dataset)
-        end_time = time.time()
-        logging.debug(f'[DECISION_TREE]: Duration = {end_time - start_time}')
 
     def __build_tree(self, dataset: Dataset, depth=0) -> TreeNode:
-        # Kiểm tra điều kiện dừng xem có thể cắt cành luôn không
         if self.__can_stop(dataset, depth):
-            self.depth = depth if depth > self.depth else self.depth
             return TreeNode(dataset, label=dataset.most_common_label())
 
-        # Tìm thuộc tính và ngưỡng phân chia tối ưu nhất dựa trên IG
         attribute, threshold, lte_dataset, gt_dataset = dataset.best_splitter()
 
-        # Xây cây con trái dựa trên tập dữ liệu nhỏ hơn hoặc bằng ngưỡng
         left = self.__build_tree(lte_dataset, depth + 1)
-
-        # Xây cây con phải dựa trên tập dữ liệu lớn hơn ngưỡng
         right = self.__build_tree(gt_dataset, depth + 1)
 
         return TreeNode(dataset, attribute, threshold, left, right)
@@ -102,15 +91,12 @@ class RandomForest(Model):
         self.trees = []
 
     def fit(self, X: List[Record], Y: List[Label]) -> None:
-        start_time = time.time()
         with ThreadPoolExecutor(max_workers=self.n_jobs) as executor:
             trees = executor.map(
                 lambda args: self.__build_tree(*args),
                 [(X, Y) for _ in range(self.n_estimators)]
             )
         self.trees = list(trees)
-        end_time = time.time()
-        logging.debug(f'[RANDOM_FOREST]: Duration = {end_time - start_time}')
 
     def __build_tree(self, X: List[Record], Y: List[Label]) -> DecisionTree:
         X_samples, Y_samples = self.__bootstrap_sampling(X, Y)
@@ -131,7 +117,7 @@ class RandomForest(Model):
         if type(self.max_samples) == int:
             n_samples = self.max_samples
         elif type(self.max_samples) == float:
-            n_samples = int(self.max_samples * n_samples)
+            n_samples = math.ceil(self.max_samples * n_samples)
 
         for _ in range(n_samples):
             index = random.randint(0, n_records - 1)

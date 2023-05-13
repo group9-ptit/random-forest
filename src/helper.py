@@ -1,8 +1,17 @@
-import csv
 import math
-from copy import deepcopy
-from src.type import CsvRow, CsvRowWithoutLabel, Record, List, Tuple
-from sklearn.preprocessing import LabelEncoder
+import time
+import uuid
+from src.type import List
+import pandas as pd
+from sklearn import preprocessing, model_selection
+
+
+def random_id(length=9):
+    return uuid.uuid4().hex[:length]
+
+
+def now():
+    return time.time()
 
 
 def log2(x: float) -> float:
@@ -16,43 +25,29 @@ def entropy(probabilities: List[float]) -> float:
     return h
 
 
-def read_csv(filepath: str, delimiter=",") -> List[CsvRow]:
-    with open(filepath, encoding='utf-8') as file:
-        reader = csv.DictReader(file, delimiter=delimiter)
-        return [row for row in reader]
+def read_csv(filepath: str):
+    return pd.read_csv(filepath)
 
 
-def separate_dataset(data: List[CsvRow], label: str) -> Tuple[List[CsvRowWithoutLabel], List[str]]:
-    """Phân chia dữ liệu thành hai phần thuộc tính và nhãn"""
-    X, Y = [], []
-    for row in deepcopy(data):
-        _label = row.pop(label)
-        X.append(row)
-        Y.append(_label)
-    return X, Y
+def encode_attributes(df: pd.DataFrame):
+    for column in df.columns:
+        values = df[column]
+        if values.dtype == object or values.dtype == bool:
+            encoder = preprocessing.LabelEncoder()
+            df[column] = encoder.fit_transform(values)
+    return df
 
 
-def encode_attributes(data: List[CsvRowWithoutLabel]) -> List[Record]:
-    """Mã hoá thuộc tính rời rạc thành liên tục"""
-    attribute_values = {}
+def separate_dataset(df: pd.DataFrame, label: str):
+    y = df[label]
+    X = df.drop(labels=[label], axis=1)
+    return X, y
 
-    for row in data:
-        for key, value in row.items():
-            values = attribute_values.get(key, [])
-            values.append(value)
-            attribute_values.update([(key, values)])
 
-    for attribute, values in attribute_values.items():
-        encoder = LabelEncoder()
-        if type(values[0]) == str:
-            encoded_values = list(encoder.fit_transform(values))
-            attribute_values.update([(attribute, encoded_values)])
-
-    encoded_rows = []
-    for i in range(data.__len__()):
-        encoded_row = {}
-        for key, encoded_values in attribute_values.items():
-            encoded_row[key] = encoded_values[i]
-        encoded_rows.append(encoded_row)
-
-    return encoded_rows
+def train_test_split(X: pd.DataFrame, y: pd.Series, train_size: float):
+    X_train, X_test, y_train, y_test = model_selection.train_test_split(
+        X, y, train_size=train_size)
+    return {
+        'sklearn_input': (X_train, X_test, y_train, y_test),
+        'my_input': (X_train.to_dict('records'), X_test.to_dict('records'), list(y_train), list(y_test))
+    }
