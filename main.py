@@ -10,8 +10,10 @@ df = helper_pandas.read_csv("datasets/diabetes.csv")
 df = helper_pandas.encode_attributes(df)
 X, y = helper_pandas.separate_dataset(df, label="diabetes")
 
+flag = False
 
 def compare(train_size: float, max_depth=None, min_samples_split=2):
+    global flag
     print(
         f"---------Result with train_size={train_size} | max_depth={max_depth} | min_samples_split={min_samples_split}--------")
     splitted_data = helper_pandas.train_test_split(X, y, train_size)
@@ -19,14 +21,17 @@ def compare(train_size: float, max_depth=None, min_samples_split=2):
     sklearn_tree, sklearn_predict = build_with_sklearn_tree(splitted_data, max_depth, min_samples_split)
 
     # Draw tree
-    virtualization.virtualize_my_tree(my_tree, "out/my_tree.json")
-    virtualization.virtualize_sklearn_tree(sklearn_tree, "out/sklearn_tree.jpeg")
     same, diff = 0, 0
     for i in range(my_predict.__len__()):
         if my_predict[i] != sklearn_predict[i]:
             diff += 1
         else:
             same += 1
+
+    if diff != 0 and flag == False:
+        virtualization.virtualize_my_tree(my_tree, "out/my_tree.txt")
+        virtualization.virtualize_sklearn_tree(sklearn_tree, "out/sklearn_tree.png")
+        flag = True
 
     print("Same", same)
     print("Diff", diff)
@@ -63,7 +68,7 @@ def build_with_sklearn_tree(splitted_data, max_depth=None, min_samples_split=2):
 
 sizes = [0.8]
 max_depths = [None]
-min_samples_splits = [8]
+min_samples_splits = [4]
 for size in sizes:
     for max_depth in max_depths:
         for min_samples_split in min_samples_splits:

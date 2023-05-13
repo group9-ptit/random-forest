@@ -1,12 +1,11 @@
-import json
 import logging
 import random
 import time
 from abc import ABC, abstractmethod
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
-from src.dataset import Dataset
-from src.type import Record, Label, List, Optional, Dict, Any, Union, Tuple
+from src.datastructure import TreeNode, Dataset
+from src.type import Record, Label, List, Optional, Union, Tuple
 
 
 class Model(ABC):
@@ -28,43 +27,6 @@ class Model(ABC):
         pass
 
 
-class TreeNode:
-    def __init__(
-        self,
-        dataset: Dataset,
-        attribute: Optional[str] = None,
-        threshold: Optional[float] = None,
-        left: Optional['TreeNode'] = None,
-        right: Optional['TreeNode'] = None,
-        label: Optional[Label] = None
-    ) -> None:
-        self.dataset = dataset
-        self.attribute = attribute
-        self.threshold = threshold
-        self.left = left
-        self.right = right
-        self.label = label
-
-    def is_leaf(self) -> bool:
-        return self.label is not None
-
-    def to_dict(self) -> Dict[str, Any]:
-        o = {
-            'entropy': self.dataset.entropy,
-            'value': self.dataset.label_counter,
-            'samples': self.dataset.samples
-        }
-        if self.is_leaf():
-            o['label'] = self.label
-        else:
-            o['threshold'] = self.threshold
-            o['attribute'] = self.attribute
-            o['left'] = self.left.to_dict()
-            o['right'] = self.right.to_dict()
-
-        return o
-
-
 class DecisionTree(Model):
     """Cây quyết định sử dụng thuật toán ID3 cho bài toán phân lớp"""
 
@@ -77,6 +39,7 @@ class DecisionTree(Model):
         self.root = None
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
+        self.depth = 0
 
     def fit(self, X: List[Record], Y: List[Label]) -> None:
         start_time = time.time()
@@ -88,6 +51,7 @@ class DecisionTree(Model):
     def __build_tree(self, dataset: Dataset, depth=0) -> TreeNode:
         # Kiểm tra điều kiện dừng xem có thể cắt cành luôn không
         if self.__can_stop(dataset, depth):
+            self.depth = depth if depth > self.depth else self.depth
             return TreeNode(dataset, label=dataset.most_common_label())
 
         # Tìm thuộc tính và ngưỡng phân chia tối ưu nhất dựa trên IG
@@ -116,16 +80,6 @@ class DecisionTree(Model):
             attribute_value = x[attribute]
             node = node.left if attribute_value <= threshold else node.right
         return node.label
-
-    def write_tree(self, filepath: str):
-        with open(filepath, 'w', encoding='utf-8') as file:
-            json.dump(
-                self.root,
-                file,
-                default=lambda o: o.to_dict(),
-                sort_keys=True,
-                indent=2
-            )
 
 
 class RandomForest(Model):
@@ -192,7 +146,8 @@ class RandomForest(Model):
                 lambda args: self.__predict_one(*args),
                 [(tree, x) for tree in self.trees]
             )
-        sorted_most_common = sorted(Counter(labels).most_common(), key=lambda x: x[0])
+        sorted_most_common = sorted(
+            Counter(labels).most_common(), key=lambda x: x[0])
         return sorted_most_common[0][0]
 
     def __predict_one(self, tree: DecisionTree, x: Record) -> Label:

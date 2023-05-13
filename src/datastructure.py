@@ -1,8 +1,9 @@
+import json
 import math
 import logging
 from collections import Counter
 from src.helper import entropy
-from src.type import Record, Label, List, Tuple
+from src.type import Optional, Label, Dict, Any, List, Record, Tuple
 
 
 class Dataset:
@@ -27,7 +28,8 @@ class Dataset:
         max_gain = -math.inf
 
         for attribute in self.attributes:
-            split_point, loss, lte_dataset, gt_dataset = self.__best_split_point(attribute)
+            split_point, loss, lte_dataset, gt_dataset = self.__best_split_point(
+                attribute)
             information_gain = ES - loss
             if information_gain > max_gain:
                 max_gain = information_gain
@@ -96,3 +98,53 @@ class Dataset:
         most_common = self.label_counter.most_common()
         sorted_most_common = sorted(most_common, key=lambda x: x[0])
         return sorted_most_common[0][0]
+
+
+class TreeNode:
+    def __init__(
+        self,
+        dataset: Dataset,
+        attribute: Optional[str] = None,
+        threshold: Optional[float] = None,
+        left: Optional['TreeNode'] = None,
+        right: Optional['TreeNode'] = None,
+        label: Optional[Label] = None
+    ) -> None:
+        self.dataset = dataset
+        self.attribute = attribute
+        self.threshold = threshold
+        self.left = left
+        self.right = right
+        self.label = label
+
+    def is_leaf(self) -> bool:
+        return self.label is not None
+
+    def to_dict(self) -> Dict[str, Any]:
+        if self.is_leaf():
+            return {
+                'entropy': round(self.dataset.entropy, 3),
+                'samples': self.dataset.samples,
+                'value': self.dataset.label_counter,
+                'label': self.label
+            }
+        return {
+            'attribute': self.attribute,
+            'threshold': round(self.threshold, 3),
+            'entropy': round(self.dataset.entropy, 3),
+            'samples': self.dataset.samples,
+            'value': self.dataset.label_counter,
+        }
+
+    @property
+    def children(self):
+        rt = []
+        if self.left is not None:
+            rt.append(self.left)
+        if self.right is not None:
+            rt.append(self.right)
+        return rt
+
+    @property
+    def value(self) -> str:
+        return json.dumps(self.to_dict(), indent=2)
