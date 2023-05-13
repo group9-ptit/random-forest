@@ -3,47 +3,31 @@
   "entropy": 0.4112861442674737,
   "left": {
     "attribute": "blood_glucose_level",
-    "entropy": 0.2449265412241293,
+    "entropy": 0.256244097015149,
     "left": {
       "attribute": "HbA1c_level",
-      "entropy": 0.19005580492488544,
+      "entropy": 0.20286711017147557,
       "left": {
-        "entropy": 0.0,
-        "label": 0,
-        "samples": 296,
-        "value": {
-          "0": 296
-        }
-      },
-      "right": {
-        "attribute": "smoking_history",
-        "entropy": 0.27753902798508895,
+        "attribute": "age",
+        "entropy": 0.04324154504802915,
         "left": {
-          "attribute": "blood_glucose_level",
-          "entropy": 0.04466460085095255,
+          "entropy": 0.0,
+          "label": 0,
+          "samples": 340,
+          "value": {
+            "0": 340
+          }
+        },
+        "right": {
+          "attribute": "age",
+          "entropy": 0.1623261801753929,
           "left": {
-            "entropy": 0.0,
-            "label": 0,
-            "samples": 148,
-            "value": {
-              "0": 148
-            }
-          },
-          "right": {
-            "attribute": "blood_glucose_level",
-            "entropy": 0.1292337748458849,
+            "attribute": "hypertension",
+            "entropy": 0.5435644431995964,
             "left": {
               "attribute": "bmi",
               "entropy": 0.35335933502142136,
               "left": {
-                "entropy": 0.0,
-                "label": 0,
-                "samples": 11,
-                "value": {
-                  "0": 11
-                }
-              },
-              "right": {
                 "entropy": 0.8112781244591328,
                 "label": 0,
                 "samples": 4,
@@ -52,8 +36,16 @@
                   "1": 1
                 }
               },
+              "right": {
+                "entropy": 0.0,
+                "label": 0,
+                "samples": 11,
+                "value": {
+                  "0": 11
+                }
+              },
               "samples": 15,
-              "threshold": 27.195,
+              "threshold": 27.125,
               "value": {
                 "0": 14,
                 "1": 1
@@ -61,205 +53,146 @@
             },
             "right": {
               "entropy": 0.0,
-              "label": 0,
-              "samples": 41,
+              "label": 1,
+              "samples": 1,
               "value": {
-                "0": 41
+                "1": 1
               }
             },
-            "samples": 56,
-            "threshold": 159.5,
+            "samples": 16,
+            "threshold": 0.5,
             "value": {
-              "0": 55,
+              "0": 14,
+              "1": 2
+            }
+          },
+          "right": {
+            "entropy": 0.0,
+            "label": 0,
+            "samples": 68,
+            "value": {
+              "0": 68
+            }
+          },
+          "samples": 84,
+          "threshold": 63.5,
+          "value": {
+            "0": 82,
+            "1": 2
+          }
+        },
+        "samples": 424,
+        "threshold": 59.5,
+        "value": {
+          "0": 422,
+          "1": 2
+        }
+      },
+      "right": {
+        "attribute": "smoking_history",
+        "entropy": 0.35106844178406105,
+        "left": {
+          "attribute": "smoking_history",
+          "entropy": 0.05532848503795462,
+          "left": {
+            "entropy": 0.0,
+            "label": 0,
+            "samples": 109,
+            "value": {
+              "0": 109
+            }
+          },
+          "right": {
+            "attribute": "age",
+            "entropy": 0.14372616993938178,
+            "left": {
+              "attribute": "age",
+              "entropy": 0.5032583347756457,
+              "left": {
+                "entropy": 0.0,
+                "label": 0,
+                "samples": 8,
+                "value": {
+                  "0": 8
+                }
+              },
+              "right": {
+                "entropy": 0.0,
+                "label": 1,
+                "samples": 1,
+                "value": {
+                  "1": 1
+                }
+              },
+              "samples": 9,
+              "threshold": 27.5,
+              "value": {
+                "0": 8,
+                "1": 1
+              }
+            },
+            "right": {
+              "entropy": 0.0,
+              "label": 0,
+              "samples": 40,
+              "value": {
+                "0": 40
+              }
+            },
+            "samples": 49,
+            "threshold": 29.5,
+            "value": {
+              "0": 48,
               "1": 1
             }
           },
-          "samples": 204,
-          "threshold": 158.5,
+          "samples": 158,
+          "threshold": 0.5,
           "value": {
-            "0": 203,
+            "0": 157,
             "1": 1
           }
         },
         "right": {
           "attribute": "blood_glucose_level",
-          "entropy": 0.41041614171818885,
+          "entropy": 0.5293608652873644,
           "left": {
-            "entropy": 0.0,
-            "label": 0,
-            "samples": 80,
-            "value": {
-              "0": 80
-            }
-          },
-          "right": {
             "attribute": "bmi",
-            "entropy": 0.5293608652873644,
+            "entropy": 0.2942120084996958,
             "left": {
               "attribute": "blood_glucose_level",
-              "entropy": 0.38369483316931385,
+              "entropy": 0.13402979616803595,
               "left": {
-                "attribute": "age",
-                "entropy": 0.30081363556511626,
-                "left": {
-                  "entropy": 0.0,
-                  "label": 0,
-                  "samples": 50,
-                  "value": {
-                    "0": 50
-                  }
-                },
-                "right": {
-                  "attribute": "HbA1c_level",
-                  "entropy": 0.4244051447248036,
-                  "left": {
-                    "attribute": "age",
-                    "entropy": 0.3227569588973982,
-                    "left": {
-                      "entropy": 0.0,
-                      "label": 0,
-                      "samples": 30,
-                      "value": {
-                        "0": 30
-                      }
-                    },
-                    "right": {
-                      "attribute": "age",
-                      "entropy": 0.4854607607459134,
-                      "left": {
-                        "entropy": 0.0,
-                        "label": 1,
-                        "samples": 1,
-                        "value": {
-                          "1": 1
-                        }
-                      },
-                      "right": {
-                        "attribute": "HbA1c_level",
-                        "entropy": 0.4059770384755711,
-                        "left": {
-                          "entropy": 0.0,
-                          "label": 0,
-                          "samples": 15,
-                          "value": {
-                            "0": 15
-                          }
-                        },
-                        "right": {
-                          "attribute": "gender",
-                          "entropy": 0.5746356978376794,
-                          "left": {
-                            "attribute": "age",
-                            "entropy": 0.3372900666170139,
-                            "left": {
-                              "entropy": 0.8112781244591328,
-                              "label": 0,
-                              "samples": 4,
-                              "value": {
-                                "0": 3,
-                                "1": 1
-                              }
-                            },
-                            "right": {
-                              "entropy": 0.0,
-                              "label": 0,
-                              "samples": 12,
-                              "value": {
-                                "0": 12
-                              }
-                            },
-                            "samples": 16,
-                            "threshold": 65.0,
-                            "value": {
-                              "0": 15,
-                              "1": 1
-                            }
-                          },
-                          "right": {
-                            "entropy": 0.9182958340544896,
-                            "label": 0,
-                            "samples": 6,
-                            "value": {
-                              "0": 4,
-                              "1": 2
-                            }
-                          },
-                          "samples": 22,
-                          "threshold": 0.5,
-                          "value": {
-                            "0": 19,
-                            "1": 3
-                          }
-                        },
-                        "samples": 37,
-                        "threshold": 5.9,
-                        "value": {
-                          "0": 34,
-                          "1": 3
-                        }
-                      },
-                      "samples": 38,
-                      "threshold": 60.5,
-                      "value": {
-                        "0": 34,
-                        "1": 4
-                      }
-                    },
-                    "samples": 68,
-                    "threshold": 59.5,
-                    "value": {
-                      "0": 64,
-                      "1": 4
-                    }
-                  },
-                  "right": {
-                    "attribute": "age",
-                    "entropy": 0.7793498372920851,
-                    "left": {
-                      "entropy": 1.0,
-                      "label": 1,
-                      "samples": 6,
-                      "value": {
-                        "0": 3,
-                        "1": 3
-                      }
-                    },
-                    "right": {
-                      "entropy": 0.0,
-                      "label": 0,
-                      "samples": 7,
-                      "value": {
-                        "0": 7
-                      }
-                    },
-                    "samples": 13,
-                    "threshold": 57.5,
-                    "value": {
-                      "0": 10,
-                      "1": 3
-                    }
-                  },
-                  "samples": 81,
-                  "threshold": 6.55,
-                  "value": {
-                    "0": 74,
-                    "1": 7
-                  }
-                },
-                "samples": 131,
-                "threshold": 39.5,
+                "entropy": 0.0,
+                "label": 0,
+                "samples": 84,
                 "value": {
-                  "0": 124,
-                  "1": 7
+                  "0": 84
                 }
               },
               "right": {
                 "attribute": "age",
-                "entropy": 0.8112781244591328,
+                "entropy": 0.4262286569981449,
                 "left": {
+                  "entropy": 0.0,
+                  "label": 0,
+                  "samples": 15,
+                  "value": {
+                    "0": 15
+                  }
+                },
+                "right": {
                   "attribute": "bmi",
-                  "entropy": 0.5916727785823275,
+                  "entropy": 0.8112781244591328,
                   "left": {
+                    "entropy": 0.0,
+                    "label": 0,
+                    "samples": 4,
+                    "value": {
+                      "0": 4
+                    }
+                  },
+                  "right": {
                     "entropy": 1.0,
                     "label": 0,
                     "samples": 4,
@@ -268,22 +201,224 @@
                       "1": 2
                     }
                   },
-                  "right": {
-                    "entropy": 0.0,
-                    "label": 0,
-                    "samples": 10,
-                    "value": {
-                      "0": 10
-                    }
-                  },
-                  "samples": 14,
-                  "threshold": 20.655,
+                  "samples": 8,
+                  "threshold": 26.380000000000003,
                   "value": {
-                    "0": 12,
+                    "0": 6,
                     "1": 2
                   }
                 },
+                "samples": 23,
+                "threshold": 52.0,
+                "value": {
+                  "0": 21,
+                  "1": 2
+                }
+              },
+              "samples": 107,
+              "threshold": 150.0,
+              "value": {
+                "0": 105,
+                "1": 2
+              }
+            },
+            "right": {
+              "attribute": "heart_disease",
+              "entropy": 0.676941869780886,
+              "left": {
+                "attribute": "age",
+                "entropy": 0.6051865766334206,
+                "left": {
+                  "attribute": "age",
+                  "entropy": 0.7871265862012691,
+                  "left": {
+                    "entropy": 0.0,
+                    "label": 0,
+                    "samples": 7,
+                    "value": {
+                      "0": 7
+                    }
+                  },
+                  "right": {
+                    "attribute": "blood_glucose_level",
+                    "entropy": 0.9709505944546686,
+                    "left": {
+                      "entropy": 0.0,
+                      "label": 0,
+                      "samples": 2,
+                      "value": {
+                        "0": 2
+                      }
+                    },
+                    "right": {
+                      "attribute": "blood_glucose_level",
+                      "entropy": 1.0,
+                      "left": {
+                        "entropy": 0.9852281360342515,
+                        "label": 0,
+                        "samples": 7,
+                        "value": {
+                          "0": 4,
+                          "1": 3
+                        }
+                      },
+                      "right": {
+                        "entropy": 0.0,
+                        "label": 1,
+                        "samples": 1,
+                        "value": {
+                          "1": 1
+                        }
+                      },
+                      "samples": 8,
+                      "threshold": 142.5,
+                      "value": {
+                        "0": 4,
+                        "1": 4
+                      }
+                    },
+                    "samples": 10,
+                    "threshold": 113.0,
+                    "value": {
+                      "0": 6,
+                      "1": 4
+                    }
+                  },
+                  "samples": 17,
+                  "threshold": 35.5,
+                  "value": {
+                    "0": 13,
+                    "1": 4
+                  }
+                },
                 "right": {
+                  "entropy": 0.0,
+                  "label": 0,
+                  "samples": 10,
+                  "value": {
+                    "0": 10
+                  }
+                },
+                "samples": 27,
+                "threshold": 52.5,
+                "value": {
+                  "0": 23,
+                  "1": 4
+                }
+              },
+              "right": {
+                "entropy": 0.0,
+                "label": 1,
+                "samples": 1,
+                "value": {
+                  "1": 1
+                }
+              },
+              "samples": 28,
+              "threshold": 0.5,
+              "value": {
+                "0": 23,
+                "1": 5
+              }
+            },
+            "samples": 135,
+            "threshold": 32.575,
+            "value": {
+              "0": 128,
+              "1": 7
+            }
+          },
+          "right": {
+            "attribute": "HbA1c_level",
+            "entropy": 0.934068055375491,
+            "left": {
+              "attribute": "age",
+              "entropy": 0.7219280948873623,
+              "left": {
+                "attribute": "bmi",
+                "entropy": 0.5586293734521992,
+                "left": {
+                  "entropy": 0.0,
+                  "label": 0,
+                  "samples": 8,
+                  "value": {
+                    "0": 8
+                  }
+                },
+                "right": {
+                  "attribute": "smoking_history",
+                  "entropy": 0.7219280948873623,
+                  "left": {
+                    "attribute": "age",
+                    "entropy": 0.5916727785823275,
+                    "left": {
+                      "entropy": 0.0,
+                      "label": 0,
+                      "samples": 8,
+                      "value": {
+                        "0": 8
+                      }
+                    },
+                    "right": {
+                      "entropy": 0.9182958340544896,
+                      "label": 0,
+                      "samples": 6,
+                      "value": {
+                        "0": 4,
+                        "1": 2
+                      }
+                    },
+                    "samples": 14,
+                    "threshold": 56.5,
+                    "value": {
+                      "0": 12,
+                      "1": 2
+                    }
+                  },
+                  "right": {
+                    "entropy": 0.0,
+                    "label": 1,
+                    "samples": 1,
+                    "value": {
+                      "1": 1
+                    }
+                  },
+                  "samples": 15,
+                  "threshold": 4.5,
+                  "value": {
+                    "0": 12,
+                    "1": 3
+                  }
+                },
+                "samples": 23,
+                "threshold": 26.96,
+                "value": {
+                  "0": 20,
+                  "1": 3
+                }
+              },
+              "right": {
+                "entropy": 0.0,
+                "label": 1,
+                "samples": 2,
+                "value": {
+                  "1": 2
+                }
+              },
+              "samples": 25,
+              "threshold": 76.0,
+              "value": {
+                "0": 20,
+                "1": 5
+              }
+            },
+            "right": {
+              "attribute": "gender",
+              "entropy": 0.9709505944546686,
+              "left": {
+                "attribute": "smoking_history",
+                "entropy": 0.9940302114769565,
+                "left": {
                   "entropy": 0.0,
                   "label": 1,
                   "samples": 2,
@@ -291,65 +426,10 @@
                     "1": 2
                   }
                 },
-                "samples": 16,
-                "threshold": 63.0,
-                "value": {
-                  "0": 12,
-                  "1": 4
-                }
-              },
-              "samples": 147,
-              "threshold": 180.0,
-              "value": {
-                "0": 136,
-                "1": 11
-              }
-            },
-            "right": {
-              "attribute": "age",
-              "entropy": 0.9402859586706311,
-              "left": {
-                "attribute": "HbA1c_level",
-                "entropy": 0.7918583525674836,
-                "left": {
-                  "entropy": 0.0,
-                  "label": 0,
-                  "samples": 9,
-                  "value": {
-                    "0": 9
-                  }
-                },
                 "right": {
-                  "attribute": "smoking_history",
-                  "entropy": 0.9798687566511528,
+                  "attribute": "bmi",
+                  "entropy": 0.9182958340544896,
                   "left": {
-                    "attribute": "age",
-                    "entropy": 0.8812908992306927,
-                    "left": {
-                      "entropy": 0.0,
-                      "label": 0,
-                      "samples": 4,
-                      "value": {
-                        "0": 4
-                      }
-                    },
-                    "right": {
-                      "entropy": 1.0,
-                      "label": 1,
-                      "samples": 6,
-                      "value": {
-                        "0": 3,
-                        "1": 3
-                      }
-                    },
-                    "samples": 10,
-                    "threshold": 39.0,
-                    "value": {
-                      "0": 7,
-                      "1": 3
-                    }
-                  },
-                  "right": {
                     "entropy": 0.0,
                     "label": 1,
                     "samples": 2,
@@ -357,62 +437,70 @@
                       "1": 2
                     }
                   },
-                  "samples": 12,
-                  "threshold": 4.5,
+                  "right": {
+                    "entropy": 0.5916727785823275,
+                    "label": 0,
+                    "samples": 7,
+                    "value": {
+                      "0": 6,
+                      "1": 1
+                    }
+                  },
+                  "samples": 9,
+                  "threshold": 20.655,
                   "value": {
-                    "0": 7,
-                    "1": 5
+                    "0": 6,
+                    "1": 3
                   }
                 },
-                "samples": 21,
-                "threshold": 6.15,
+                "samples": 11,
+                "threshold": 3.5,
                 "value": {
-                  "0": 16,
+                  "0": 6,
                   "1": 5
                 }
               },
               "right": {
-                "entropy": 0.863120568566631,
+                "entropy": 0.0,
                 "label": 1,
-                "samples": 7,
+                "samples": 4,
                 "value": {
-                  "0": 2,
-                  "1": 5
+                  "1": 4
                 }
               },
-              "samples": 28,
-              "threshold": 57.0,
+              "samples": 15,
+              "threshold": 0.5,
               "value": {
-                "0": 18,
-                "1": 10
+                "0": 6,
+                "1": 9
               }
             },
-            "samples": 175,
-            "threshold": 34.8,
+            "samples": 40,
+            "threshold": 6.35,
             "value": {
-              "0": 154,
-              "1": 21
+              "0": 26,
+              "1": 14
             }
           },
-          "samples": 255,
-          "threshold": 113.0,
+          "samples": 175,
+          "threshold": 158.5,
           "value": {
-            "0": 234,
+            "0": 154,
             "1": 21
           }
         },
-        "samples": 459,
-        "threshold": 1.5,
+        "samples": 333,
+        "threshold": 2.5,
         "value": {
-          "0": 437,
+          "0": 311,
           "1": 22
         }
       },
-      "samples": 755,
-      "threshold": 5.35,
+      "samples": 757,
+      "threshold": 5.9,
       "value": {
         "0": 733,
-        "1": 22
+        "1": 24
       }
     },
     "right": {
@@ -423,19 +511,19 @@
         "1": 9
       }
     },
-    "samples": 764,
+    "samples": 766,
     "threshold": 210.0,
     "value": {
       "0": 733,
-      "1": 31
+      "1": 33
     }
   },
   "right": {
     "entropy": 0.0,
     "label": 1,
-    "samples": 35,
+    "samples": 33,
     "value": {
-      "1": 35
+      "1": 33
     }
   },
   "samples": 799,

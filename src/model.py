@@ -1,9 +1,9 @@
 import json
 import logging
 import random
-import statistics
 import time
 from abc import ABC, abstractmethod
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from src.dataset import Dataset
 from src.type import Record, Label, List, Optional, Dict, Any, Union, Tuple
@@ -192,7 +192,8 @@ class RandomForest(Model):
                 lambda args: self.__predict_one(*args),
                 [(tree, x) for tree in self.trees]
             )
-        return statistics.mode(labels)
+        sorted_most_common = sorted(Counter(labels).most_common(), key=lambda x: x[0])
+        return sorted_most_common[0][0]
 
     def __predict_one(self, tree: DecisionTree, x: Record) -> Label:
         return tree.predict_one(x)

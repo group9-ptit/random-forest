@@ -16,7 +16,6 @@ def virtualize_sklearn_tree(tree: DecisionTreeClassifier, out: str):
     plot_tree(
         tree,
         feature_names=tree.feature_names_in_,
-        fontsize=14,
         filled=True,
         rounded=True,
         class_names=classes

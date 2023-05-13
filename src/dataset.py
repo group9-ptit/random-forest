@@ -1,6 +1,5 @@
 import math
 import logging
-import statistics
 from collections import Counter
 from src.helper import entropy
 from src.type import Record, Label, List, Tuple
@@ -94,4 +93,6 @@ class Dataset:
         return set(self.labels).__len__() == 1
 
     def most_common_label(self):
-        return statistics.mode(self.labels)
+        most_common = self.label_counter.most_common()
+        sorted_most_common = sorted(most_common, key=lambda x: x[0])
+        return sorted_most_common[0][0]
