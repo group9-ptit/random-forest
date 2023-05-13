@@ -1,5 +1,6 @@
 from typing import Optional
 import math
+import json
 
 
 def entropy(freq: list) -> float:
@@ -12,7 +13,7 @@ def entropy(freq: list) -> float:
     
     return entropy của list này
     """
-    if len(freq) == 1:
+    if len(freq) <= 1:
         return float(0)
     entropy = []
     
@@ -22,12 +23,12 @@ def entropy(freq: list) -> float:
         entropy.append(probability * math.log2(probability))
     
     return -sum(entropy)
-
+    
 
 class TreeNode(object):
-    def __init__(self, idxs: list, depth: int = 0, entropy: float = 0) -> None:
+    def __init__(self, idxs: list, depth: int = 0, count_label: dict = {}) -> None:
         self.idxs = idxs #index của data trong node này
-        self.entropy = entropy # diễn tả entropy của attribute
+        self.entropy = entropy(list(count_label.values())) # diễn tả entropy của attribute
         self.depth = depth # diễn tả độ sâu của cây
 
         self.atribute = None # diễn tả thuộc tính được chọn làm node !!! Lưu attribute dưới dạng index
@@ -37,6 +38,44 @@ class TreeNode(object):
         self.label = None # nhãn của Node đó nếu nó là lá
 
         self.father_attribute = None # Nhớ thuộc tính cha của nó là gì, chỉ dùng để tiện vẽ cây thui
+        self.count_label = count_label
+
+    
+    def set_leaf(self) -> None:
+        #tìm xem với node này thì nhãn nào xuất hiện nhiều nhất và gán bằng nhãn đó:
+        item_max_value = max(self.count_label.items(), key=lambda x : x[1])
+        self.label = item_max_value[0]
+    
+
+    def is_leaf(self) -> bool:
+        return True if self.label is not None else False
+    
+
+
+    
+    
+    def to_dict(self) -> dict:
+        if self.is_leaf():
+            return {
+                'sample': len(self.idxs),
+                'value': self.count_label,
+                'entropy': self.entropy,
+                'value_attribute': self.value_attribute,
+                'label': self.label
+            }
+        return {
+            'sample': len(self.idxs),
+            'value': self.count_label,
+            'attribute': self.atribute,
+            'entropy': self.entropy,
+            'value': self.count_label,
+            'value_attribute': self.value_attribute
+        }
+
+    
+    @property
+    def value(self) -> str:
+        return json.dumps(self.to_dict(), indent=2)
     
 
     def display(self):
@@ -105,8 +144,8 @@ class DecisionTreeID3(object):
 
         self.root = TreeNode(
             idxs = idx_items, 
-            depth = 0, 
-            entropy = entropy(list(dict_freq.values()))
+            depth = 0,
+            count_label=dict_freq,
         )
         
         self.root.unselected_atributes = attributes
@@ -117,24 +156,27 @@ class DecisionTreeID3(object):
             node = queue.pop()
 
             if len(node.idxs) < self.min_samples_split:
+                #here
                 # print("node idx", node.idxs)
-                dict_freq = self.__count_freq(idx_items= node.idxs)
+                # dict_freq = self.__count_freq(idx_items= node.idxs)
 
-                #tìm xem với node này thì nhãn nào xuất hiện nhiều nhất và gán bằng nhãn đó:
-                item_max_value = max(dict_freq.items(), key=lambda x : x[1])
-                node.label = item_max_value[0]
-                # print("hi: ", dict_freq)
+                # #tìm xem với node này thì nhãn nào xuất hiện nhiều nhất và gán bằng nhãn đó:
+                # item_max_value = max(dict_freq.items(), key=lambda x : x[1])
+                # node.label = item_max_value[0]
+                # # print("hi: ", dict_freq)
+                node.set_leaf()
                 continue
 
             if self.max_depth is None or node.depth < self.max_depth:
                 node.children = self.__findNextNode(node)
                 queue += node.children
             else:
-                dict_freq = self.__count_freq(idx_items=node.idxs)
+                node.set_leaf()
+                # dict_freq = self.__count_freq(idx_items=node.idxs)
                 
-                #tìm xem với node này thì nhãn nào xuất hiện nhiều nhất và gán bằng nhãn đó:
-                item_max_value = max(dict_freq.items(), key=lambda x : x[1])
-                node.label = item_max_value[0]
+                # #tìm xem với node này thì nhãn nào xuất hiện nhiều nhất và gán bằng nhãn đó:
+                # item_max_value = max(dict_freq.items(), key=lambda x : x[1])
+                # node.label = item_max_value[0]
 
                 pass
                 
@@ -217,9 +259,10 @@ class DecisionTreeID3(object):
             child_node = TreeNode(
                 idxs = value, 
                 depth = node.depth + 1, 
-                entropy = entropy(list(
-                    freq.values()
-                ))
+                # entropy = entropy(list(
+                #     freq.values()
+                # )),
+                count_label=freq
             )
             labels = list(freq.keys())
             if len(labels) == 1:
@@ -276,6 +319,19 @@ class DataProcess():
         self.data = pd.read_csv(path)
 
 
+from PrettyPrint import PrettyPrintTree
+
+def virtualize_my_tree(tree: DecisionTreeID3, out: str):
+    printer = PrettyPrintTree(
+        lambda node: node.children,
+        lambda node: node.value,
+        return_instead_of_print=True,
+        color=None,
+        border=True,
+    )
+    tree_str = printer(tree.root)
+    with open(out, mode='w') as file:
+        file.write(tree_str)
 
 from sklearn.metrics import accuracy_score
 attribute2idx = {'outlook': 0, 'temperature': 1, 'humidity': 2, 'wind': 3}
@@ -298,19 +354,19 @@ if __name__=='__main__':
 
     labels = [label2idx[item] for item in y]
     
-    tree = DecisionTreeID3(None,14)
+    tree = DecisionTreeID3(None,1)
     
 
     atts = [i for i in range(4)]
 
-    root = TreeNode(
-            idxs = [i for i in range (len(labels))], 
-            depth = 0, 
-            entropy = 0.94
-        )
+    # root = TreeNode(
+    #         idxs = [i for i in range (len(labels))], 
+    #         depth = 0, 
+    #         entropy = entropy()
+    #     )
         
         
-    root.unselected_atributes = atts
+    # root.unselected_atributes = atts
     tree.fit(train, labels, atts)
     
     pred_labels = tree.predict(train)
@@ -319,4 +375,8 @@ if __name__=='__main__':
     print(accuracy_score(labels, pred_labels))
 
     tree.display_tree()
+    
+    virtualize_my_tree(tree, "tree.txt")
+
+    #display tree
     
