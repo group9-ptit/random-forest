@@ -28,11 +28,11 @@ class Dataset:
         probabilities = [value / samples for value in freq]
         return helper.gini(probabilities)
 
-    def best_splitter(self, measure: Measure) -> Tuple[str, float, 'Dataset', 'Dataset']:
+    def best_splitter(self, measure: Measure) -> Tuple[str, float, "Dataset", "Dataset"]:
         """Tìm thuộc tính có khả năng phân loại tốt nhất và ngưỡng giá trị của nó"""
-        if measure == 'entropy':
+        if measure == "entropy":
             return self.__best_splitter_entropy()
-        if measure == 'gini':
+        if measure == "gini":
             return self.__best_splitter_gini()
 
     def __best_splitter_entropy(self):
@@ -51,7 +51,7 @@ class Dataset:
                 _lte = lte_dataset
                 _gt = gt_dataset
 
-        logging.debug(f'Best splitter: IG[{_attribute}] = {max_gain}')
+        logging.debug(f"Best splitter: IG[{_attribute}] = {max_gain}")
 
         return _attribute, _threshold, _lte, _gt
 
@@ -83,7 +83,7 @@ class Dataset:
 
         return split_point, min_entropy, lte, gt
 
-    def __best_splitter_gini(self) -> Tuple[str, float, 'Dataset', 'Dataset']:
+    def __best_splitter_gini(self) -> Tuple[str, float, "Dataset", "Dataset"]:
         _attribute, _threshold, _lte, _gt = None, 0, None, None
         gini_split = math.inf
 
@@ -97,11 +97,11 @@ class Dataset:
                 _lte = lte_dataset
                 _gt = gt_dataset
 
-        logging.debug(f'Best splitter: Gini[{_attribute}] = {gini_split}')
+        logging.debug(f"Best splitter: Gini[{_attribute}] = {gini_split}")
 
         return _attribute, _threshold, _lte, _gt
 
-    def __best_split_point_gini(self, attribute: str) -> Tuple[float, float, 'Dataset', 'Dataset']:
+    def __best_split_point_gini(self, attribute: str) -> Tuple[float, float, "Dataset", "Dataset"]:
         split_point, min_gini, lte, gt = None, math.inf, None, None
         values = [record[attribute] for record in self.records]
         values.sort()
@@ -164,8 +164,8 @@ class TreeNode:
         dataset: Dataset,
         attribute: Optional[str] = None,
         threshold: Optional[float] = None,
-        left: Optional['TreeNode'] = None,
-        right: Optional['TreeNode'] = None,
+        left: Optional["TreeNode"] = None,
+        right: Optional["TreeNode"] = None,
         label: Optional[Label] = None
     ) -> None:
         self.dataset = dataset
@@ -182,16 +182,16 @@ class TreeNode:
         if self.is_leaf():
             return {
                 criterion: round(self.dataset.__getattribute__(criterion), 3),
-                'samples': self.dataset.samples,
-                'value': self.dataset.label_counter,
-                'label': self.label
+                "samples": self.dataset.samples,
+                "value": self.dataset.label_counter,
+                "label": self.label
             }
         return {
-            'attribute': self.attribute,
-            'threshold': round(self.threshold, 3),
+            "attribute": self.attribute,
+            "threshold": round(self.threshold, 3),
             criterion: round(self.dataset.__getattribute__(criterion), 3),
-            'samples': self.dataset.samples,
-            'value': self.dataset.label_counter,
+            "samples": self.dataset.samples,
+            "value": self.dataset.label_counter,
         }
 
     @property

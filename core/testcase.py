@@ -18,16 +18,16 @@ class TestCase(ABC):
         train_size=0.8,
         min_samples_split=2,
         max_depth: Optional[int] = None,
-        criterion: Measure = 'entropy'
+        criterion: Measure = "entropy"
     ) -> None:
         _input = train_test_split(X, Y, train_size)
-        self.my_input = _input['my_input']
-        self.sklearn_input = _input['sklearn_input']
+        self.my_input = _input["my_input"]
+        self.sklearn_input = _input["sklearn_input"]
         self.train_size = train_size
         self.meta_params = {
-            'max_depth': max_depth,
-            'min_samples_split': min_samples_split,
-            'criterion': criterion
+            "max_depth": max_depth,
+            "min_samples_split": min_samples_split,
+            "criterion": criterion
         }
         self.id = random_id()
         self.my_result = {}
@@ -48,10 +48,10 @@ class TestCase(ABC):
 
     def run_metrics(self, y_test, y_pred) -> Dict[str, float]:
         return {
-            'Accuracy': round(accuracy_score(y_test, y_pred), 3),
-            'F1': round(f1_score(y_test, y_pred), 3),
-            'Precision': round(precision_score(y_test, y_pred), 3),
-            'Recall': round(recall_score(y_test, y_pred), 3)
+            "Accuracy": round(accuracy_score(y_test, y_pred), 3),
+            "F1": round(f1_score(y_test, y_pred), 3),
+            "Precision": round(precision_score(y_test, y_pred), 3),
+            "Recall": round(recall_score(y_test, y_pred), 3)
         }
 
     def print_result(self):
@@ -66,8 +66,8 @@ class TestCase(ABC):
             "Recall"
         ])
         table.add_rows([
-            ["Mine", self.my_result['train_duration'], *self.my_result['metrics'].values()],
-            ["Sklearn", self.sklearn_result['train_duration'], *self.sklearn_result['metrics'].values()]
+            ["Mine", self.my_result["train_duration"], *self.my_result["metrics"].values()],
+            ["Sklearn", self.sklearn_result["train_duration"], *self.sklearn_result["metrics"].values()]
         ])
         print(table)
         print()
@@ -82,9 +82,9 @@ class DecisionTreeTestCase(TestCase):
         end_train = now()
         y_pred = tree.predict(X_test)
         self.my_result = {
-            'model': tree,
-            'metrics': self.run_metrics(y_test, y_pred),
-            'train_duration': round(end_train - start_train, 2),
+            "model": tree,
+            "metrics": self.run_metrics(y_test, y_pred),
+            "train_duration": round(end_train - start_train, 2),
         }
 
     def run_sklearn_model(self):
@@ -95,14 +95,14 @@ class DecisionTreeTestCase(TestCase):
         end_train = now()
         y_pred = tree.predict(X_test)
         self.sklearn_result = {
-            'model': tree,
-            'metrics': self.run_metrics(y_test, y_pred),
-            'train_duration': round(end_train - start_train, 2),
+            "model": tree,
+            "metrics": self.run_metrics(y_test, y_pred),
+            "train_duration": round(end_train - start_train, 2),
         }
 
     def export_tree(self):
-        my_tree = self.my_result['model']
-        sklearn_tree = self.sklearn_result['model']
+        my_tree = self.my_result["model"]
+        sklearn_tree = self.sklearn_result["model"]
         virtualize_my_tree(my_tree, f"out/{self.id}.txt")
         virtualize_sklearn_tree(sklearn_tree, f"out/{self.id}.jpeg")
 
@@ -112,7 +112,7 @@ class RandomForestTestCase(TestCase):
         self,
         X: DataFrame,
         Y: Series,
-        criterion: Measure = 'entropy',
+        criterion: Measure = "entropy",
         n_estimators=30,
         train_size=0.8,
         min_samples_split=2,
@@ -122,11 +122,11 @@ class RandomForestTestCase(TestCase):
     ) -> None:
         super().__init__(X, Y, train_size, min_samples_split, max_depth, criterion)
         self.meta_params = {
-            'n_estimators': n_estimators,
-            'max_depth': max_depth,
-            'min_samples_split': min_samples_split,
-            'max_samples': max_samples,
-            'n_jobs': n_jobs
+            "n_estimators": n_estimators,
+            "max_depth": max_depth,
+            "min_samples_split": min_samples_split,
+            "max_samples": max_samples,
+            "n_jobs": n_jobs
         }
 
     def run_my_model(self):
@@ -137,9 +137,9 @@ class RandomForestTestCase(TestCase):
         end_train = now()
         y_pred = forest.predict(X_test)
         self.my_result = {
-            'model': forest,
-            'metrics': self.run_metrics(y_test, y_pred),
-            'train_duration': round(end_train - start_train, 2),
+            "model": forest,
+            "metrics": self.run_metrics(y_test, y_pred),
+            "train_duration": round(end_train - start_train, 2),
         }
 
     def run_sklearn_model(self):
@@ -153,7 +153,7 @@ class RandomForestTestCase(TestCase):
         end_train = now()
         y_pred = forest.predict(X_test)
         self.sklearn_result = {
-            'model': forest,
-            'metrics': self.run_metrics(y_test, y_pred),
-            'train_duration': round(end_train - start_train, 2),
+            "model": forest,
+            "metrics": self.run_metrics(y_test, y_pred),
+            "train_duration": round(end_train - start_train, 2),
         }

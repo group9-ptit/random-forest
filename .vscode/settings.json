@@ -3,7 +3,9 @@
     "datastructure",
     "facecolor",
     "gini",
+    "matplotlib",
     "prettytable",
+    "pyplot",
     "savefig",
     "sklearn"
   ],

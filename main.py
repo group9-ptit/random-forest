@@ -1,11 +1,15 @@
+import logging
 from core import helper, testcase
+
+logging.basicConfig(level=logging.DEBUG)
 
 N_JOBS = 4
 MAX_SAMPLES = 0.8
 
-df = helper.read_csv("datasets/diabetes.csv")
+df = helper.read_csv("datasets/phishing.csv")
 df = helper.encode_attributes(df)
-X, Y = helper.separate_dataset(df, label="diabetes")
+X, Y = helper.separate_dataset(df, label="class")
+X = X.drop(columns=["Index"])
 
 estimators = [50]
 train_sizes = [0.8]
@@ -21,7 +25,7 @@ for train_size in train_sizes:
                 train_size=train_size,
                 max_depth=max_depth,
                 min_samples_split=min_samples_split,
-                criterion='entropy'
+                criterion="entropy"
             )
             ts.run()
             ts.print_result()

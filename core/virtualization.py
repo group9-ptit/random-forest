@@ -14,7 +14,7 @@ def virtualize_my_tree(tree: DecisionTree, out: str):
         border=True,
     )
     tree_str = printer(tree.root)
-    with open(out, mode='w') as file:
+    with open(out, mode="w", encoding="utf-8") as file:
         file.write(tree_str)
 
 

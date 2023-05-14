@@ -33,7 +33,7 @@ class DecisionTree(Model):
         self,
         max_depth: Optional[int] = None,
         min_samples_split: int = 2,
-        criterion: Measure = 'entropy'
+        criterion: Measure = "entropy"
     ) -> None:
         super().__init__()
         self.root = None
@@ -79,7 +79,7 @@ class RandomForest(Model):
 
     def __init__(
         self,
-        criterion: Measure = 'entropy',
+        criterion: Measure = "entropy",
         n_estimators=100,
         min_samples_split=2,
         n_jobs=2,

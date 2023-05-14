@@ -46,7 +46,7 @@ def encode_attributes(df: pd.DataFrame):
 
 def separate_dataset(df: pd.DataFrame, label: str):
     y = df[label]
-    X = df.drop(labels=[label], axis=1)
+    X = df.drop(columns=[label], axis=1)
     return X, y
 
 
@@ -54,6 +54,6 @@ def train_test_split(X: pd.DataFrame, y: pd.Series, train_size: float):
     X_train, X_test, y_train, y_test = model_selection.train_test_split(
         X, y, train_size=train_size)
     return {
-        'sklearn_input': (X_train, X_test, y_train, y_test),
-        'my_input': (X_train.to_dict('records'), X_test.to_dict('records'), list(y_train), list(y_test))
+        "sklearn_input": (X_train, X_test, y_train, y_test),
+        "my_input": (X_train.to_dict("records"), X_test.to_dict("records"), list(y_train), list(y_test))
     }
