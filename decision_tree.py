@@ -1,7 +1,7 @@
 from typing import Optional
 import math
 import json
-
+import logging
 
 def entropy(freq: list) -> float:
 
@@ -26,7 +26,7 @@ def entropy(freq: list) -> float:
     
 
 class TreeNode(object):
-    def __init__(self, idxs: list, depth: int = 0, count_label: dict = {}) -> None:
+    def __init__(self, idxs: list, depth: int = 0, count_label: dict = {}, idx2attribute: Optional[dict] = None) -> None:
         self.idxs = idxs #index của data trong node này
         self.entropy = entropy(list(count_label.values())) # diễn tả entropy của attribute
         self.depth = depth # diễn tả độ sâu của cây
@@ -39,10 +39,12 @@ class TreeNode(object):
 
         self.father_attribute = None # Nhớ thuộc tính cha của nó là gì, chỉ dùng để tiện vẽ cây thui
         self.count_label = count_label
+        self.idx2attribute = idx2attribute
 
-    
     def set_leaf(self) -> None:
-        #tìm xem với node này thì nhãn nào xuất hiện nhiều nhất và gán bằng nhãn đó:
+        """
+        tìm xem với node này thì nhãn nào xuất hiện nhiều nhất và gán bằng nhãn đó:
+        """
         item_max_value = max(self.count_label.items(), key=lambda x : x[1])
         self.label = item_max_value[0]
     
@@ -51,10 +53,27 @@ class TreeNode(object):
         return True if self.label is not None else False
     
 
-
-    
-    
     def to_dict(self) -> dict:
+        if self.idx2attribute is not None:
+            if self.is_leaf():
+                return {
+                    'sample': len(self.idxs),
+                    'value': self.count_label,
+                    'entropy': self.entropy,
+                    'value_attribute': self.value_attribute,
+                    'label': self.label
+                }
+            
+            return {
+                'sample': len(self.idxs),
+                'value': self.count_label,
+                'attribute': self.idx2attribute[self.atribute] if self.atribute is not None else self.atribute,
+                'entropy': self.entropy,
+                'value': self.count_label,
+                'value_attribute': self.value_attribute
+            }
+            return
+        
         if self.is_leaf():
             return {
                 'sample': len(self.idxs),
@@ -124,13 +143,14 @@ class TreeNode(object):
                     break
 
 class DecisionTreeID3(object):
-    def __init__(self, max_depth: Optional[int] = None, min_samples_splits: int = 1) -> None:
+    def __init__(self, max_depth: Optional[int] = None, min_samples_splits: int = 1, index2attribute: Optional[list] = None) -> None:
         self.max_depth = max_depth
         self.min_samples_split = min_samples_splits
         
         self.data = None
         self.labels = None
         self.root = None # khởi tạo node ban đầu bằng None
+        self.index2attribute = index2attribute
         
 
     def fit(self, data : list, labels : list, attributes: list) -> None:
@@ -145,7 +165,8 @@ class DecisionTreeID3(object):
         self.root = TreeNode(
             idxs = idx_items, 
             depth = 0,
-            count_label=dict_freq,
+            count_label = dict_freq,
+            idx2attribute= self.index2attribute
         )
         
         self.root.unselected_atributes = attributes
@@ -156,14 +177,6 @@ class DecisionTreeID3(object):
             node = queue.pop()
 
             if len(node.idxs) < self.min_samples_split:
-                #here
-                # print("node idx", node.idxs)
-                # dict_freq = self.__count_freq(idx_items= node.idxs)
-
-                # #tìm xem với node này thì nhãn nào xuất hiện nhiều nhất và gán bằng nhãn đó:
-                # item_max_value = max(dict_freq.items(), key=lambda x : x[1])
-                # node.label = item_max_value[0]
-                # # print("hi: ", dict_freq)
                 node.set_leaf()
                 continue
 
@@ -172,13 +185,6 @@ class DecisionTreeID3(object):
                 queue += node.children
             else:
                 node.set_leaf()
-                # dict_freq = self.__count_freq(idx_items=node.idxs)
-                
-                # #tìm xem với node này thì nhãn nào xuất hiện nhiều nhất và gán bằng nhãn đó:
-                # item_max_value = max(dict_freq.items(), key=lambda x : x[1])
-                # node.label = item_max_value[0]
-
-                pass
                 
 
     def __divideAttribute(self, idx_items: list, attribute: int) -> dict:
@@ -215,11 +221,8 @@ class DecisionTreeID3(object):
                 freq_dict[item] = int(freq_dict[item] + 1)
             except:
                 freq_dict.update({item: 1})
-
         
-        return freq_dict
-
-        
+        return freq_dict  
 
 
     def __findNextNode(self, node : TreeNode) -> list:
@@ -231,12 +234,12 @@ class DecisionTreeID3(object):
         
         best_IG = 0
         best_attribute = None
-        best_dict_attribute = None
+        best_dict_attribute = {}
         
 
         for attribute in node.unselected_atributes: # duyệt các attribute chưa được xét làm node
             dict_attribute = self.__divideAttribute(idx_items = idxs, attribute = attribute)
-            
+            # print("dict_att", dict_attribute)
             I = 0
             for key, value in dict_attribute.items():
                 freq_dict = self.__count_freq(value)
@@ -245,8 +248,9 @@ class DecisionTreeID3(object):
             
             
             IG = node.entropy - I
+            # print(IG)
             # print(f'--------------{IG}------------------')
-            if IG > best_IG:
+            if IG >= best_IG:
                 best_IG = IG
                 best_attribute = attribute
                 best_dict_attribute = dict_attribute
@@ -254,15 +258,16 @@ class DecisionTreeID3(object):
         node.atribute = best_attribute
         unselected_attributes = [attribute for attribute in node.unselected_atributes if attribute != best_attribute]
         children_node = []
+        
+        # print('best_dict_attribute ', best_dict_attribute)
+
         for key, value in best_dict_attribute.items():
             freq = self.__count_freq(value)
             child_node = TreeNode(
                 idxs = value, 
                 depth = node.depth + 1, 
-                # entropy = entropy(list(
-                #     freq.values()
-                # )),
-                count_label=freq
+                count_label=freq,
+                idx2attribute=self.index2attribute
             )
             labels = list(freq.keys())
             if len(labels) == 1:
@@ -314,9 +319,6 @@ class DecisionTreeID3(object):
  
 import pandas as pd
 
-class DataProcess():
-    def __init__(self, path: str):
-        self.data = pd.read_csv(path)
 
 
 from PrettyPrint import PrettyPrintTree
@@ -354,7 +356,7 @@ if __name__=='__main__':
 
     labels = [label2idx[item] for item in y]
     
-    tree = DecisionTreeID3(None,1)
+    tree = DecisionTreeID3(None,14)
     
 
     atts = [i for i in range(4)]
