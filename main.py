@@ -28,7 +28,7 @@ for train_size in train_sizes:
             )
             ts.run()
             ts.print_result()
-            # ts.export_tree()
+            ts.export_tree()
 
 # for n_estimators in estimators:
 #     for train_size in train_sizes:
