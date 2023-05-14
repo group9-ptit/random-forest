@@ -2,9 +2,10 @@ from abc import ABC, abstractmethod
 from pandas import DataFrame, Series
 from prettytable import PrettyTable
 from core.model import DecisionTree, RandomForest
+from core.decisiontree import DecisionTreeID3
 from core.type import Optional, Union, Dict, Measure
-from core.helper import train_test_split, now, random_id
-from core.virtualization import virtualize_my_tree, virtualize_sklearn_tree
+from core.helper import train_test_split, train_test_split_with_multibranch, now, random_id
+from core.virtualization import virtualize_my_tree, virtualize_sklearn_tree, virtualize_multibranch_tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
@@ -157,3 +158,73 @@ class RandomForestTestCase(TestCase):
             "metrics": self.run_metrics(y_test, y_pred),
             "train_duration": round(end_train - start_train, 2),
         }
+
+
+class AllDecisionTreeTestCase(DecisionTreeTestCase):
+    def __init__(
+        self,
+        X: DataFrame,
+        Y: Series,
+        train_size=0.8,
+        min_samples_split=2,
+        max_depth: Optional[int] = None,
+        criterion: Measure = "entropy",
+    ) -> None:
+        _input = train_test_split_with_multibranch(X, Y, train_size)
+        self.my_input = _input["my_input"]
+        self.sklearn_input = _input["sklearn_input"]
+        self.multibranch_input = _input["multibranch_input"]
+        self.train_size = train_size
+        self.meta_params = {
+            "max_depth": max_depth,
+            "min_samples_split": min_samples_split,
+            "criterion": criterion
+        }
+        self.id = random_id()
+        self.my_result = {}
+        self.sklearn_result = {}
+        self.multibranch_result = {}
+
+    def run(self) -> None:
+        super().run()
+        self.run_multibranch_model()
+    
+    def run_multibranch_model(self):
+        X_train, X_test, y_train, y_test, attrs = self.multibranch_input
+        tree = DecisionTreeID3(
+            max_depth=self.meta_params['max_depth'],
+            min_samples_splits=self.meta_params['min_samples_split']
+        )
+        start_train = now()
+        tree.fit(X_train, y_train, attrs)
+        end_train = now()
+        y_pred = tree.predict(X_test)
+        self.multibranch_result = {
+            "model": tree,
+            "metrics": self.run_metrics(y_test, y_pred),
+            "train_duration": round(end_train - start_train, 2),
+        }
+
+    def export_tree(self):
+        super().export_tree()
+        multibranch_tree = self.multibranch_result["model"]
+        virtualize_multibranch_tree(multibranch_tree, f"out/{self.id}-multi.txt")
+
+    def print_result(self):
+        header = " | ".join([f"{key}={value}" for key, value in self.meta_params.items()])
+        print(header)
+        table = PrettyTable([
+            "Model",
+            "Train Duration",
+            "Accuracy",
+            "F1",
+            "Precision",
+            "Recall"
+        ])
+        table.add_rows([
+            ["Mine", self.my_result["train_duration"], *self.my_result["metrics"].values()],
+            ["Multi Branch", self.multibranch_result["train_duration"], *self.multibranch_result["metrics"].values()],
+            ["Sklearn", self.sklearn_result["train_duration"], *self.sklearn_result["metrics"].values()]
+        ])
+        print(table)
+        print()

@@ -1,14 +1,28 @@
 from math import ceil
 from PrettyPrint import PrettyPrintTree
 from core.model import DecisionTree
+from core.decisiontree import DecisionTreeID3
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from matplotlib import pyplot as plt
 
 
-def virtualize_my_tree(tree: DecisionTree, out: str):
+def virtualize_my_tree(tree: DecisionTree | DecisionTreeID3, out: str):
     printer = PrettyPrintTree(
         lambda node: node.children,
         lambda node: node.to_json(tree.criterion),
+        return_instead_of_print=True,
+        color=None,
+        border=True,
+    )
+    tree_str = printer(tree.root)
+    with open(out, mode="w", encoding="utf-8") as file:
+        file.write(tree_str)
+
+
+def virtualize_multibranch_tree(tree: DecisionTreeID3, out: str):
+    printer = PrettyPrintTree(
+        lambda node: node.children,
+        lambda node: node.to_json(),
         return_instead_of_print=True,
         color=None,
         border=True,

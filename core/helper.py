@@ -31,8 +31,9 @@ def gini(probabilities: List[float]) -> float:
         g -= p ** 2
     return g
 
+
 def read_csv(filepath: str):
-    return pd.read_csv(filepath)
+    return pd.read_csv(filepath, index_col=0)
 
 
 def encode_attributes(df: pd.DataFrame):
@@ -51,9 +52,23 @@ def separate_dataset(df: pd.DataFrame, label: str):
 
 
 def train_test_split(X: pd.DataFrame, y: pd.Series, train_size: float):
-    X_train, X_test, y_train, y_test = model_selection.train_test_split(
-        X, y, train_size=train_size)
+    X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, train_size=train_size)
     return {
         "sklearn_input": (X_train, X_test, y_train, y_test),
         "my_input": (X_train.to_dict("records"), X_test.to_dict("records"), list(y_train), list(y_test))
+    }
+
+
+def train_test_split_with_multibranch(X: pd.DataFrame, y: pd.Series, train_size: float):
+    X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, train_size=train_size)
+    return {
+        "sklearn_input": (X_train, X_test, y_train, y_test),
+        "my_input": (X_train.to_dict("records"), X_test.to_dict("records"), list(y_train), list(y_test)),
+        "multibranch_input": (
+            X_train.values.tolist(),
+            X_test.values.tolist(),
+            list(y_train),
+            list(y_test),
+            [i for i in range(X.shape[1])]
+        )
     }
