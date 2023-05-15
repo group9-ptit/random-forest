@@ -49,8 +49,7 @@ class DecisionTree(Model):
         if self.__can_stop(dataset, depth):
             return TreeNode(dataset, label=dataset.most_common_label())
 
-        attribute, threshold, lte_dataset, gt_dataset = dataset.best_splitter(
-            self.criterion)
+        attribute, threshold, lte_dataset, gt_dataset = dataset.best_splitter(self.criterion)
 
         left = self.__build_tree(lte_dataset, depth + 1)
         right = self.__build_tree(gt_dataset, depth + 1)
@@ -62,7 +61,7 @@ class DecisionTree(Model):
             return True
         if dataset.samples < self.min_samples_split:
             return True
-        return dataset.same_class()
+        return dataset.same_records() or dataset.same_class()
 
     def predict_one(self, x: Record) -> Label:
         node = self.root

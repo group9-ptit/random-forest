@@ -3,10 +3,11 @@ from PrettyPrint import PrettyPrintTree
 from core.model import DecisionTree
 from core.decisiontree import DecisionTreeID3
 from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import ConfusionMatrixDisplay
 from matplotlib import pyplot as plt
 
 
-def virtualize_my_tree(tree: DecisionTree | DecisionTreeID3, out: str):
+def virtualize_my_tree(tree: DecisionTree, out: str):
     printer = PrettyPrintTree(
         lambda node: node.children,
         lambda node: node.to_json(tree.criterion),
@@ -46,3 +47,8 @@ def virtualize_sklearn_tree(tree: DecisionTreeClassifier, out: str):
     )
     plt.savefig(out)
     plt.close()
+
+
+def show_confusion_matrix(y_true: list, y_pred: list):
+    ConfusionMatrixDisplay.from_predictions(y_true, y_pred)
+    plt.show()
