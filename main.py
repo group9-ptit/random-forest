@@ -5,10 +5,10 @@ from core import helper, testcase
 
 N_JOBS = 6
 MAX_SAMPLES = 0.8
-
-df = helper.read_csv("datasets/diabetes.csv")
+# C:\Users\hp\random-forest\random-forest\datasets
+df = helper.read_csv("datasets/phishing.csv")
 df = helper.encode_attributes(df)
-X, Y = helper.separate_dataset(df, label="diabetes")
+X, Y = helper.separate_dataset(df, label="class")
 
 estimators = [50]
 train_sizes = [0.8]
@@ -18,7 +18,7 @@ min_samples_splits = [2, 4]
 for train_size in train_sizes:
     for max_depth in max_depths:
         for min_samples_split in min_samples_splits:
-            ts = testcase.DecisionTreeTestCase(
+            ts = testcase.AllDecisionTreeTestCase(
                 X=X,
                 Y=Y,
                 train_size=train_size,
