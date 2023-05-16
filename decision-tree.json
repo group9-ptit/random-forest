@@ -1,0 +1,7 @@
+[
+  {
+    "name": "max_depth=None | min_samples_split=5 | criterion=entropy",
+    "mine": { "Accuracy": 0.929, "F1": 0.927, "Precision": 0.92, "Recall": 0.934 },
+    "sklearn": { "Accuracy": 0.929, "F1": 0.926, "Precision": 0.935, "Recall": 0.917 }
+  }
+]
