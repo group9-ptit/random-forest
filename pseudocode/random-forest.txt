@@ -1,0 +1,17 @@
+Input:
+    - tập huấn luyện (train)
+    - tập thuộc tính (attributes)
+    - nhãn (labels)
+    - độ sâu tối đa (max_depth)
+    - số mẫu nhỏ nhất có thể chia nhánh (min_samples_split)
+    - số lượng cây trong rừng (n_estimators)
+    - số lượng lấy mẫu tối đa (max_samples)
+Output: Random Forest
+
+Bước 1: Khởi tạo trees = [n_estimators]
+Bước 2: Lặp
+    for (i = 0; i < n_estimators; ++i) {
+        // Lấy mẫu bằng kỹ thuật Boostrap Sampling
+        dataset = boostrap_sampling(train, max_samples)
+        tree[i] = DecisionTree(max_depth, min_samples_split)
+    }

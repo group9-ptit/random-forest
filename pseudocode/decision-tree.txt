@@ -1,0 +1,38 @@
+Input:
+    - tập huấn luyện (train)
+    - tập thuộc tính (attributes)
+    - nhãn (labels)
+    - độ sâu tối đa (max_depth)
+    - số mẫu nhỏ nhất có thể chia nhánh (min_samples_split)
+Output: Decision Tree
+
+Bước 1: Khởi tạo root = null
+Bước 2: Lặp đệ quy
+    if (train cùng một nhãn || train giống nhau || depth >= max_depth || size(train) < min_samples_split) {
+        label = nhãn xuất hiện nhiều nhất
+        return LeafNode (label)
+    }
+
+    // Tìm nút phân chia tốt nhất
+    IG_max = -inf, max_attribute = null, max_threshold = 0
+    for attribute in attributes {
+        values = Sắp xếp lại tập train theo giá trị của attribute tăng dần
+        for (i = 0; i < values.length - 1; ++i) {
+            threshold = (values[i] + values[i + 1]) / 2
+            left_train, right_train = Chia tập train thành 2 phần theo ngưỡng threshold đối với attribute
+            IG = E(train) - E(left_train) - E(right_train)
+            
+            if (IG > IG_max) {
+                IG_max = IG
+                max_attribute = attribute
+                max_threshold = threshold
+            }
+        }
+    }
+
+    node_left = Lặp với tập left_train
+    node_right = Lặp với tập right_train
+
+    return Node(max_attribute, max_threshold)
+
+Bước 3: Gán root = giá trị trả về ở bước 2

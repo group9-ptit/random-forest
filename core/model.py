@@ -27,8 +27,6 @@ class Model(ABC):
 
 
 class DecisionTree(Model):
-    """Cây quyết định sử dụng thuật toán ID3 cho bài toán phân lớp"""
-
     def __init__(
         self,
         max_depth: Optional[int] = None,
@@ -74,8 +72,6 @@ class DecisionTree(Model):
 
 
 class RandomForest(Model):
-    """Rừng ngẫu nhiên xây dựng bởi cây cây quyết định sử dụng ID3"""
-
     def __init__(
         self,
         criterion: Measure = "entropy",

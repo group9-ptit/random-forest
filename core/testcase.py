@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from pandas import DataFrame, Series
 from prettytable import PrettyTable
 from core.model import DecisionTree, RandomForest
@@ -9,7 +10,6 @@ from core.virtualization import virtualize_my_tree, virtualize_sklearn_tree, vir
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-
 
 class TestCase(ABC):
     def __init__(
@@ -36,6 +36,8 @@ class TestCase(ABC):
 
     def run(self) -> None:
         print(f"-------TestID: {self.id}-------")
+        header = " | ".join([f"{key}={value}" for key, value in self.meta_params.items()])
+        print(header)
         self.run_my_model()
         self.run_sklearn_model()
 
@@ -56,8 +58,6 @@ class TestCase(ABC):
         }
 
     def print_result(self):
-        header = " | ".join([f"{key}={value}" for key, value in self.meta_params.items()])
-        print(header)
         table = PrettyTable([
             "Model",
             "Train Duration",
@@ -72,6 +72,13 @@ class TestCase(ABC):
         ])
         print(table)
         print()
+
+    def to_dict(self):
+        return {
+            "name": " | ".join([f"{key}={value}" for key, value in self.meta_params.items()]),
+            "mine": self.my_result["metrics"],
+            "sklearn": self.sklearn_result["metrics"]
+        }
 
 
 class DecisionTreeTestCase(TestCase):
@@ -211,8 +218,6 @@ class AllDecisionTreeTestCase(DecisionTreeTestCase):
         virtualize_multibranch_tree(multibranch_tree, f"out/{self.id}-multi.txt")
 
     def print_result(self):
-        header = " | ".join([f"{key}={value}" for key, value in self.meta_params.items()])
-        print(header)
         table = PrettyTable([
             "Model",
             "Train Duration",
